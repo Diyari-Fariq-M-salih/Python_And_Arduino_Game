@@ -36,7 +36,7 @@ def read_joystick():
     while True:
         x, y, button = read_joystick_data(ser)
         print(f"Joystick: X={x}, Y={y}")
-        if x and y:
+        if x is not None and y is not None:
          dead_zone = 50  # Adjust as needed
          center_x = 521
          center_y = 513
