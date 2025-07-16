@@ -18,7 +18,7 @@ time.sleep(2)  # Let the serial port initialize
 
 # Music setup
 pygame.mixer.init()
-pygame.mixer.music.load("8-Bit-Music")  # Replace with your music file path
+pygame.mixer.music.load("8-Bit-Music.mp3")  # Replace with your music file path
 pygame.mixer.music.play(-1)  # Loop forever
 
 # Game settings
@@ -35,20 +35,36 @@ def read_joystick():
     global direction
     while True:
         x, y, button = read_joystick_data(ser)
+        print(f"Joystick: X={x}, Y={y}")
         if x and y:
-            if x < 400:
-                direction = (-20, 0)
-            elif x > 600:
-                direction = (20, 0)
-            elif y < 400:
-                direction = (0, -20)
-            elif y > 600:
-                direction = (0, 20)
+         dead_zone = 50  # Adjust as needed
+         center_x = 521
+         center_y = 513
+
+         dx = x - center_x
+         dy = y - center_y
+
+    # Horizontal movement (left/right)
+        if abs(dx) > dead_zone and abs(dx) > abs(dy):  # Prioritize horizontal if stronger
+            if dx < 0:
+              direction = (-20, 0)  # LEFT
+            else:
+              direction = (20, 0)   # RIGHT
+
+    # Vertical movement (up/down)
+        elif abs(dy) > dead_zone:
+            if dy < 0:
+              direction = (0, -20)  # UP
+            else:
+              direction = (0, 20)   # DOWN
+
+
         time.sleep(0.1)
 
 # Start joystick reader in a thread
 threading.Thread(target=read_joystick, daemon=True).start()
 
+# Main game loop
 # Main game loop
 running = True
 while running:
@@ -58,11 +74,17 @@ while running:
             running = False
 
     head_x, head_y = snake[0]
-    new_head = (head_x + direction[0], head_y + direction[1])
+    dx, dy = direction
+
+    # Wrap-around
+    new_head_x = (head_x + dx) % WIDTH
+    new_head_y = (head_y + dy) % HEIGHT
+    new_head = (new_head_x, new_head_y)
+
     snake.insert(0, new_head)
 
     if new_head == food:
-        food = (20 * (time.time_ns() % 30), 20 * (time.time_ns() % 30))  # Random
+        food = (20 * (time.time_ns() % 30), 20 * (time.time_ns() % 30))  # Random-ish
     else:
         snake.pop()
 
@@ -71,6 +93,7 @@ while running:
         pygame.draw.rect(win, (0, 255, 0), (*segment, 20, 20))
     pygame.draw.rect(win, (255, 0, 0), (*food, 20, 20))
     pygame.display.update()
+
 
 pygame.quit()
 ser.close()
