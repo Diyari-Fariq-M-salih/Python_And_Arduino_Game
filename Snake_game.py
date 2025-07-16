@@ -13,7 +13,7 @@ def read_joystick_data(ser):
 
 
 # Setup serial
-ser = serial.Serial('COM3', 9600)  # Change COM3 to your Arduino port
+ser = serial.Serial('COM6', 9600)  # Change COM3 to your Arduino port
 time.sleep(2)  # Let the serial port initialize
 
 # Music setup
