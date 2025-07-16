@@ -18,7 +18,7 @@ time.sleep(2)  # Let the serial port initialize
 
 # Music setup
 pygame.mixer.init()
-pygame.mixer.music.load("your_music.mp3")  # Replace with your music file path
+pygame.mixer.music.load("8-Bit-Music")  # Replace with your music file path
 pygame.mixer.music.play(-1)  # Loop forever
 
 # Game settings
